@@ -6,10 +6,14 @@ meta {
 
 post {
   url: http://localhost:6745/upload
-  body: none
+  body: multipartForm
   auth: none
 }
 
 headers {
   rin-transcribe-auth-secret: MakeWar
+}
+
+body:multipart-form {
+  audio-file: @file(/tmp/audio.mp3)
 }
