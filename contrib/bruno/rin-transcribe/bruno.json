@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "rin-transcribe",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}
