@@ -1,4 +1,4 @@
-console.log(`It works!`);
+// console.log(`It works!`);
 
 let secretToken = "";
 function checkTokenInStorage() {
@@ -41,7 +41,7 @@ function uploadAudioFile() {
   showLoading();
 
   const data = new FormData();
-  data.append("file", inputFile.files[0]);
+  data.append("audio-file", inputFile.files[0]);
 
   fetch("/upload", {
     method: "POST",

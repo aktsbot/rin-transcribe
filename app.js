@@ -1,4 +1,6 @@
 import express from "express";
+import fileUpload from "express-fileupload";
+import axios from "axios";
 import { configDotenv } from "dotenv";
 import fs from "fs";
 import path from "path";
@@ -62,14 +64,45 @@ app.get("/", (req, res) => {
   res.send(html.index);
 });
 
-app.post("/upload", auth, (req, res) => {
-  return res.send({
-    message: "Success",
-    data: {
-      text: "This is now working",
-    },
-  });
-});
+app.post(
+  "/upload",
+  auth,
+  fileUpload({
+    limits: { fileSize: 24 * 1024 * 1024 }, // 24 mb
+  }),
+  async (req, res) => {
+    try {
+      // console.log(req.files["audio-file"]);
+
+      const fileBlob = new Blob([req.files["audio-file"]["data"]]);
+      const formData = new FormData();
+      formData.append("file", fileBlob, req.files["audio-file"]["name"]);
+      formData.append("model", "whisper-1");
+      // https://platform.openai.com/docs/guides/speech-to-text/quickstart
+      const openaiResp = await axios.post(
+        "https://api.openai.com/v1/audio/translations",
+        formData,
+        {
+          headers: {
+            Authorization: "Bearer " + config.openApiKey,
+          },
+        }
+      );
+
+      return res.send({
+        message: "Success",
+        data: {
+          text: openaiResp.data.text,
+        },
+      });
+    } catch (e) {
+      console.log(e.response.data);
+      return res.status(500).send({
+        message: "Unknown error happened",
+      });
+    }
+  }
+);
 
 app.listen(config.port, (err) => {
   if (err) {
